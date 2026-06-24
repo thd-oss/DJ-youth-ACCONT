@@ -318,8 +318,8 @@ export const SpecialBudgetTracker: React.FC = () => {
                       >
                         <Users className="w-3 h-3 inline mr-2 opacity-70" />
                         {org.name}
-                        {org.type !== 'NORMAL' && (
-                          <span className="ml-2 text-[10px] bg-gray-200 text-gray-600 px-1 py-0.5 rounded">{org.type === 'NEWCOMER' ? '새가족팀' : '임원진'}</span>
+                        {org.type !== '일반 목장' && (
+                          <span className="ml-2 text-[10px] bg-gray-200 text-gray-600 px-1 py-0.5 rounded">{org.type}</span>
                         )}
                       </button>
                     </li>

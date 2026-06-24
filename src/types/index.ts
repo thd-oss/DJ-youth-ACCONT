@@ -27,7 +27,7 @@ export interface SpecialBudget {
   yearlyLimit: number;
 }
 
-export type OrgType = 'NORMAL' | 'EXECUTIVE' | 'NEWCOMER';
+export type OrgType = string;
 
 export interface OrgBudgetLimit {
   id: string; // 예: 'visit', 'dinner', 'operation'

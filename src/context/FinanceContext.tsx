@@ -20,6 +20,11 @@ interface FinanceContextType {
   renameWallet: (oldName: string, newName: string) => void;
   deleteWallet: (name: string) => void;
   updateWallets: (wallets: string[]) => void;
+  orgTypes: string[];
+  addOrgType: (name: string) => void;
+  renameOrgType: (oldName: string, newName: string) => void;
+  deleteOrgType: (name: string) => void;
+  updateOrgTypes: (types: string[]) => void;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -77,6 +82,10 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
     loadFromStorage('cf_wallets', ['교부금', '회비'])
   );
 
+  const [orgTypes, setOrgTypes] = useState<string[]>(() => 
+    loadFromStorage('cf_org_types', ['일반 목장', '임원진', '새가족팀'])
+  );
+
   const [budgetConfig, setBudgetConfig] = useState<BudgetConfig>(() => {
     const defaultData: BudgetConfig = { 
       year: new Date().getFullYear(), 
@@ -88,7 +97,7 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
         { 
           id: 'org_1', 
           name: '1목장', 
-          type: 'NORMAL', 
+          type: '일반 목장', 
           budgets: [
             { id: 'visit', categoryName: '심방비', halfYearlyLimit: 0, yearlyLimit: 150000 },
             { id: 'dinner', categoryName: '회식비', halfYearlyLimit: 75000, yearlyLimit: 150000 }
@@ -97,13 +106,13 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
         {
           id: 'org_exec',
           name: '임원진',
-          type: 'EXECUTIVE',
+          type: '임원진',
           budgets: [] // 상시 지출 (제한 없음)
         },
         {
           id: 'org_newcomer',
           name: '새가족팀',
-          type: 'NEWCOMER',
+          type: '새가족팀',
           budgets: [
             { id: 'visit', categoryName: '다과/심방비', halfYearlyLimit: 0, yearlyLimit: 300000 },
             { id: 'operation', categoryName: '운영비', halfYearlyLimit: 0, yearlyLimit: 300000 }
@@ -128,7 +137,7 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
       stored.organizations = stored.smallGroups.map((sg: any) => ({
         id: sg.id,
         name: sg.name,
-        type: 'NORMAL',
+        type: '일반 목장',
         budgets: [
           { id: 'visit', categoryName: '심방비', halfYearlyLimit: 0, yearlyLimit: 150000 },
           { id: 'dinner', categoryName: '회식비', halfYearlyLimit: 75000, yearlyLimit: 150000 }
@@ -139,6 +148,17 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
       stored.organizations = defaultData.organizations;
     }
     
+    // 마이그레이션: 과거 영문 타입(NORMAL 등)을 한글로 변환
+    if (stored.organizations) {
+      stored.organizations = stored.organizations.map((org: any) => {
+        let newType = org.type;
+        if (newType === 'NORMAL') newType = '일반 목장';
+        else if (newType === 'EXECUTIVE') newType = '임원진';
+        else if (newType === 'NEWCOMER') newType = '새가족팀';
+        return { ...org, type: newType };
+      });
+    }
+
     return stored as BudgetConfig;
   });
 
@@ -162,6 +182,10 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
   useEffect(() => {
     saveToStorage('cf_wallets', wallets);
   }, [wallets]);
+
+  useEffect(() => {
+    saveToStorage('cf_org_types', orgTypes);
+  }, [orgTypes]);
 
   const addTransaction = (transaction: Transaction) => {
     setTransactions(prev => [...prev, transaction]);
@@ -237,6 +261,31 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
     setWallets(prev => prev.filter(w => w !== name));
   };
 
+  const addOrgType = (name: string) => {
+    if (!orgTypes.includes(name) && name.trim() !== '') {
+      setOrgTypes(prev => [...prev, name.trim()]);
+    }
+  };
+
+  const renameOrgType = (oldName: string, newName: string) => {
+    const trimmedNew = newName.trim();
+    if (trimmedNew === '' || orgTypes.includes(trimmedNew)) return;
+    
+    setOrgTypes(prev => prev.map(t => t === oldName ? trimmedNew : t));
+    
+    // 조직 데이터 내의 타입도 변경
+    setBudgetConfig(prev => ({
+      ...prev,
+      organizations: prev.organizations.map(org => 
+        org.type === oldName ? { ...org, type: trimmedNew } : org
+      )
+    }));
+  };
+
+  const deleteOrgType = (name: string) => {
+    setOrgTypes(prev => prev.filter(t => t !== name));
+  };
+
   return (
     <FinanceContext.Provider value={{
       transactions,
@@ -256,7 +305,12 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
       addWallet,
       renameWallet,
       deleteWallet,
-      updateWallets: setWallets
+      updateWallets: setWallets,
+      orgTypes,
+      addOrgType,
+      renameOrgType,
+      deleteOrgType,
+      updateOrgTypes: setOrgTypes
     }}>
       {children}
     </FinanceContext.Provider>
