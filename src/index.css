@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ecount-navy: #1C3B6E;
+  --color-ecount-blue: #004F9F;
+  --color-ecount-gray: #F2F4F7;
+  --color-ecount-border: #C9D1D9;
+  --color-ecount-rowHover: #EBF1F5;
+}
+
+@layer base {
+  body {
+    @apply bg-ecount-gray text-[13px] text-gray-800 font-sans;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 테이블 기본 스타일 리셋 및 ERP화 */
+  table {
+    @apply border-collapse w-full text-[12px] md:text-[13px];
+  }
+  
+  th {
+    @apply bg-gray-200 text-gray-700 font-semibold border border-ecount-border px-3 py-2 text-center whitespace-nowrap;
+  }
+  
+  td {
+    @apply border border-ecount-border px-3 py-2 align-middle;
+  }
+
+  /* 입력 폼 공통 스타일 (컴팩트) */
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  select {
+    @apply border border-ecount-border bg-white text-gray-800 px-2 py-1 h-8 focus:outline-none focus:border-ecount-blue focus:ring-1 focus:ring-ecount-blue text-[13px] rounded-none w-full;
+  }
+
+  button {
+    @apply rounded-none;
+  }
+}
