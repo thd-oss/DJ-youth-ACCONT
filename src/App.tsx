@@ -140,7 +140,7 @@ function App() {
               {renderNavMenu()}
             </div>
             <div 
-              className="flex-1 bg-black bg-opacity-20" 
+              className="flex-1 bg-black/40 backdrop-blur-sm transition-opacity" 
               onClick={() => setIsMobileMenuOpen(false)}
             />
           </div>
