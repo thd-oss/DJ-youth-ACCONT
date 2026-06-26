@@ -131,20 +131,30 @@ function App() {
         </aside>
 
         {/* LNB - Mobile (Overlay) */}
-        {isMobileMenuOpen && (
-          <div className="absolute inset-0 top-10 z-40 lg:hidden flex">
-            <div className="w-52 bg-white border-r border-ecount-border h-full shadow-lg flex flex-col">
-              <div className="px-3 py-2 bg-gray-100 border-b border-ecount-border text-xs font-bold text-gray-600">
-                전체메뉴
-              </div>
-              {renderNavMenu()}
+        <div 
+          className={`fixed inset-0 top-10 z-50 lg:hidden flex transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+            isMobileMenuOpen ? 'visible' : 'invisible'
+          }`}
+        >
+          {/* Overlay Background */}
+          <div 
+            className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+              isMobileMenuOpen ? 'opacity-100' : 'opacity-0'
+            }`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          {/* Sidebar Panel */}
+          <div 
+            className={`relative w-52 bg-white border-r border-ecount-border h-full shadow-2xl flex flex-col transform transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+              isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+          >
+            <div className="px-3 py-2 bg-gray-100 border-b border-ecount-border text-xs font-bold text-gray-600">
+              전체메뉴
             </div>
-            <div 
-              className="flex-1 bg-black/40 backdrop-blur-sm transition-opacity" 
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
+            {renderNavMenu()}
           </div>
-        )}
+        </div>
 
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col min-w-0 bg-ecount-gray overflow-hidden">
