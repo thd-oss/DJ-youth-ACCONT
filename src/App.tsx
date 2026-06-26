@@ -132,7 +132,7 @@ function App() {
 
         {/* LNB - Mobile (Overlay) */}
         {isMobileMenuOpen && (
-          <div className="absolute inset-0 top-10 z-10 lg:hidden flex">
+          <div className="absolute inset-0 top-10 z-40 lg:hidden flex">
             <div className="w-52 bg-white border-r border-ecount-border h-full shadow-lg flex flex-col">
               <div className="px-3 py-2 bg-gray-100 border-b border-ecount-border text-xs font-bold text-gray-600">
                 전체메뉴
